@@ -38,6 +38,8 @@ async def process_query(query: str):
 
 
 def parse_question(query: str):
+    if "?" not in query:
+        return query, []
     parts = query.split("?")
     question = parts[0]
     if '\n' not in parts[1]:
