@@ -15,13 +15,14 @@ SOURCES = [
 async def process_query(query: str):
     question, answers = parse_question(query)
 
-    if len(answers) == 0:
-        return None, "", []
-
     tasks = [query_gpt(question, source) for source in SOURCES]
     results: List[GPTResult] = await asyncio.gather(*tasks)
 
-    answer, correct_results, prior_result_idx = get_correct_answer(answers, results)
+    if len(answers) == 0:
+        answer, correct_results, prior_result_idx = None, results, results.index(max(results, key=lambda x: x.source_confidence))
+    else:
+        answer, correct_results, prior_result_idx = get_correct_answer(answers, results)
+        answer += 1
 
     sources_merged = []
     for res in correct_results:
@@ -33,7 +34,7 @@ async def process_query(query: str):
 
     reasoning = correct_results[prior_result_idx].content + " Подтверждается " + ", ".join(used_sources_titles)
 
-    return answer + 1, reasoning, used_sources_urls
+    return answer, reasoning, used_sources_urls
 
 
 def parse_question(query: str):
