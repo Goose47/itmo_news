@@ -32,11 +32,17 @@ async def process_query(query: str):
     used_sources_urls = [source.url for source in sources_merged]
     used_sources_titles = [source.title for source in sources_merged]
 
-    reasoning = correct_results[prior_result_idx].content + " Подтверждается " + ", ".join(used_sources_titles)
+    reasoning = correct_results[prior_result_idx].content + " Ответ дан с помощью YandexGPT. Источники: " + ", ".join(used_sources_titles)
 
     return answer, reasoning, used_sources_urls
 
 
 def parse_question(query: str):
-    parts = query.split("\n")
-    return parts[0], parts[1:]
+    parts = query.split("?")
+    question = parts[0]
+    if '\n' not in parts[1]:
+        return question, []
+
+    answers = parts[1].strip('\n')
+    answers = answers.split('\n')
+    return question, answers
