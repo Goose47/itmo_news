@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+gunicorn
+aiomysql
+aiohttp
+python-dotenv
+editdistance
+numpy
